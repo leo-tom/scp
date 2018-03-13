@@ -1,0 +1,8 @@
+[package]
+name = "scp"
+version = "0.1.0"
+authors = ["leo-tom <coder.le0.1060@gmail.com>"]
+
+[dependencies]
+scpl = { git = "https://github.com/leo-tom/complex_plane" , branch = "master"}
+num-complex = "*"
