@@ -1,0 +1,12 @@
+SCP(Simple Complex Processor) is a script language and its interpreter. To compile
+it, do
+
+git clone git@github.com:leo-tom/scp.git
+cd scp
+cargo build --release
+
+You can read doc.html to know how this language works. Also reading documentation of
+https://github.com/leo-tom/complex_plane may help you. This is a library used internally
+in SCP.
+
+ENJOY!!
