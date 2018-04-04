@@ -30,10 +30,27 @@ use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
+pub enum Logic{
+    le(ComplexNode<TYPE>,ComplexNode<TYPE>),
+    ge(ComplexNode<TYPE>,ComplexNode<TYPE>),
+    lt(ComplexNode<TYPE>,ComplexNode<TYPE>),
+    gt(ComplexNode<TYPE>,ComplexNode<TYPE>),
+    eq(ComplexNode<TYPE>,ComplexNode<TYPE>),
+    not(ComplexNode<TYPE>),
+
+}
+
+#[derive(Debug)]
 pub enum Command {
     DEFINE (String,Box<Command>),
-    DEFINE_SIMPLE (String,ComplexNode<TYPE>),
+    DEFINESIMPLE (String,ComplexNode<TYPE>),
     EXPRESSION(ComplexNode<TYPE>),
+    /*Make parser parse LEXPRESSION*/
+    LEXPRESSION{
+        val : Logic,
+        or : Box<Command>,
+        and : Box<Command>,
+    },
     IF {
         expression: Box<Command>,
         inside: Box<Command>,
@@ -94,7 +111,7 @@ impl Command {
                 buff.push('\n');
                 buff.push_str(&right._to_string(depth+1));
             }
-            &Command::DEFINE_SIMPLE(ref left,ref right) => {
+            &Command::DEFINESIMPLE(ref left,ref right) => {
                 for _ in 0..depth {buff.push_str("    ");}
                 buff.push_str(&format!("DEFINE {} as ",left));
                 buff.push_str(&right.to_hstring());
@@ -142,7 +159,6 @@ impl Command {
     }
 }
 impl fmt::Display for Command {
-
     fn  fmt(&self,f: &mut fmt::Formatter) -> fmt::Result{
         write!(f,"{}",self.to_string())
     }
@@ -300,7 +316,7 @@ pub fn parse(script: &str, j: u32) -> Result<Vec<Command>, ScparseError> {
             let mut retval = (script,"");
             for c in script.chars() {
                 match c {
-                    '\n' | ';' => {
+                    ';' => {
                         retval = (&script[..index],&script[(index+1)..]);
                         break;
                     }
@@ -330,7 +346,7 @@ pub fn parse(script: &str, j: u32) -> Result<Vec<Command>, ScparseError> {
             let right = iter.next().unwrap();
             let def = match right {
                 Command::EXPRESSION(x) => {
-                    Command::DEFINE_SIMPLE(left.to_owned(),x)
+                    Command::DEFINESIMPLE(left.to_owned(),x)
                 }
                 _ => Command::DEFINE(left.to_owned(),Box::new(right))
             };
